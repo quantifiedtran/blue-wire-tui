@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import BlueWire.TermView
 
 main :: IO ()
-main = someFunc
+main = bwviewer

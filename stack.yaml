@@ -36,10 +36,18 @@ resolver: lts-9.2
 # non-dependency (i.e. a user package), and its test suites and benchmarks
 # will not be run. This is useful for tweaking upstream packages.
 packages:
-- .
+- . 
+- location:
+    git: git@github.com:quantifiedtran/blue-wire-backend.git
+    commit: 1c84317fda8754f4b495e5ec0c7311656c54c218
+  extra-dep: true
+
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+    []
+# extra-dep: true
+
 
 # Override default flag values for local packages and extra-deps
 flags: {}
