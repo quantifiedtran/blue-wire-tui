@@ -35,7 +35,7 @@ renderMenu :: B.List ViewName ViewName
 renderMenu menuList =
     let -- The single item render function, using the `selected`
         -- function to style selected elements.
-        itemRender slct = B.hCenter . selected slct . \case
+        itemRender slct = {- B.hCenter . -} selected slct . \case
             Menu -> B.str "menu"
             Server -> B.str "select server"
             LocalConfig -> B.str "configure"
@@ -50,6 +50,12 @@ renderMenu menuList =
      . B.hLimit 25
     -- Render the list, before we handle styles
      $ B.renderList itemRender True menuList
+
+renderServerSelect :: B.List ViewName String -> B.Widget ViewName
+renderServerSelect = undefined
+
+renderProfile :: String -> Profile' -> B.Widget ViewName
+renderProfile profileName profile = undefined
 
 selected :: Bool -> B.Widget n -> B.Widget n
 selected True w = B.withAttr "inverted" w

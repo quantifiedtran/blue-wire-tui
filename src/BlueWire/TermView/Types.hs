@@ -29,24 +29,24 @@ data ViewConfig = ViewConfig
 
 defaultVC = ViewConfig False Nothing []
 
-data ConfigItem n
+data ConfigItem
     = BoolOpt String Bool
     | StringOpt String String
     | IntOpt String Int
-    | Nested (B.List n (ConfigItem n))
     deriving (Show)
 
 data BWVSum
     = ServerView
         { currentServer :: Maybe (String, Maybe Profile')
+        , serverStateList :: B.List ViewName (String, [String])
         }
-    | ConfigView { confStateList :: B.List ViewName (ConfigItem ViewName)}
+    | ConfigView { confStateList :: B.List ViewName ConfigItem}
     | MenuView { menuStateList :: B.List ViewName ViewName }
     deriving (Show)
 
 data BWVState = BWVState
     { view :: BWVSum
-    , viewConfig :: ViewConfig
+    , conf :: ViewConfig
     , confFile :: FilePath
     } deriving (Show)
 
