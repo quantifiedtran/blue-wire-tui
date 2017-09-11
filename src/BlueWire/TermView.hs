@@ -19,6 +19,7 @@ import BlueWire.Database.Opaleye.Schema (Profile')
 import System.IO
 import BlueWire.TermView.Render
 import BlueWire.TermView.Types
+import BlueWire.TermView.Logic
 
 bwviewer :: IO ()
 bwviewer = do
@@ -27,21 +28,24 @@ bwviewer = do
                                                 "~/.bwvconf")
     return ()
 
-menuList :: Ord n => n -> B.List n ViewName
-menuList n =
-    let list = [Server, LocalConfig]
-    in B.list n list 1
-
 handleEvents :: BWVState
              -> B.BrickEvent ViewName BWEvent
              -> B.EventM ViewName (B.Next BWVState)
 handleEvents st@BWVState{..} ev =
     case view of
-      menu@MenuView{..} -> case ev of
+        menu@MenuView{..} -> case ev of
             B.VtyEvent (B.EvKey B.KEsc _) -> B.halt st
+            B.VtyEvent (B.EvKey B.KEnter _) ->
+                case B.listSelectedElement menuStateList of
+                  Just (_, nextView) -> B.continue (switchView nextView st)
+                  Nothing -> B.continue st
+
             B.VtyEvent vtyev -> do
                 brickList_ <- B.handleListEvent vtyev menuStateList
                 B.continue $ st{ view = menu{ menuStateList = brickList_ } }
+            _ -> B.continue st
+        _ -> case ev of
+            B.VtyEvent (B.EvKey B.KEsc _) -> B.halt st
             _ -> B.continue st
 
 bwapp = B.App

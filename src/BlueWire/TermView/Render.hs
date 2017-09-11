@@ -22,13 +22,15 @@ renderState BWVState{..} = [wig] -- singleton list
     where
         -- The rendered widget
         wig = case view of
-                -- The menu view! the main screen where the program
-                -- starts, this lists possible views to switch to.
-                -- Menu shouldn't appear here, but the case is accounted
-                -- for anyway.
-                MenuView{..} -> renderMenu menuStateList
-                ServerView{..} -> undefined
-                ConfigView{..} -> undefined
+            -- The menu view! the main screen where the program
+            -- starts, this lists possible views to switch to.
+            -- Menu shouldn't appear here, but the case is accounted
+            -- for anyway.
+            MenuView{..} -> renderMenu menuStateList
+            ServerView{..} ->
+                case currentServer of
+                    Just (sname, Nothing) -> undefined
+            ConfigView{..} -> renderViewConfig conf
 
 renderMenu :: B.List ViewName ViewName
            -> B.Widget ViewName
@@ -51,7 +53,16 @@ renderMenu menuList =
     -- Render the list, before we handle styles
      $ B.renderList itemRender True menuList
 
-renderServerSelect :: B.List ViewName String -> B.Widget ViewName
+renderConfigItem :: ConfigItem -> B.Widget ViewName
+renderConfigItem = \case
+    BoolOpt name val -> B.str name B.<+> B.str (show val)
+    StringOpt name val -> B.str name B.<+> B.str (show val)
+    IntOpt name val -> B.str name B.<+> B.str (show val)
+
+renderViewConfig :: ViewConfig -> B.Widget ViewName
+renderViewConfig = undefined
+
+renderServerSelect :: B.List ViewName (String, [String]) -> B.Widget ViewName
 renderServerSelect = undefined
 
 renderProfile :: String -> Profile' -> B.Widget ViewName

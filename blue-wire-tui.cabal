@@ -18,6 +18,7 @@ library
   exposed-modules:     BlueWire.TermView
                      , BlueWire.TermView.Types
                      , BlueWire.TermView.Render
+                     , BlueWire.TermView.Logic
   build-depends:       base >= 4.7 && < 5
                      , blue-wire-backend
                      , servant-client

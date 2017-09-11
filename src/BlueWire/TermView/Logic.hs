@@ -18,11 +18,12 @@ import BlueWire.TermView.Types
 switchView :: ViewName -> BWVState -> BWVState
 switchView switchto state@BWVState{..} =
     case switchto of
-        Menu -> state{ view = MenuView menuList }
+        Menu -> state{ view = MenuView (menuList Menu) }
         Server ->
             if shouldAutoloadServer conf
-               then state{ view = ServerView (autoloadServer conf) }
-               else state{ view = ServerView Nothing }
+               then state{ view = ServerView Nothing {- (autoloadServer conf) -} (B.list Server [] 1) }
+               else state{ view = ServerView Nothing (B.list Server [] 1)}
+        LocalConfig -> state { view = ConfigView (confList conf LocalConfig) }
 
 
 menuList :: Ord n => n -> B.List n ViewName
@@ -30,7 +31,7 @@ menuList n =
     let list = [Server, LocalConfig]
     in B.list n list 1
 
-confList :: Ord n => ViewConfig -> n -> B.List n ConfItem
+confList :: Ord n => ViewConfig -> n -> B.List n ConfigItem
 confList conf@ViewConfig{..} name =
     let renderServer :: Maybe (String, Maybe String) -> String
         renderServer = \case
@@ -38,7 +39,10 @@ confList conf@ViewConfig{..} name =
             Just (server, Nothing) -> server
             Just (server, Just profile) -> server ++ ", " ++ profile
         confTree =
-            [ BoolItem "Should Autoload Server" shouldAutoloadServer
-            , StringItem "Server To Autoload" (renderServer autoloadServer)
+            [ BoolOpt "Should Autoload Server" shouldAutoloadServer
+            , StringOpt "Server To Autoload" (renderServer autoloadServer)
             ]
-    in B.list name confTree
+    in B.list name confTree 1
+
+serverList :: Ord n => [(String, [String])] -> n -> List n (String, [String])
+serverList servers =
